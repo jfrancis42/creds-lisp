@@ -2,8 +2,6 @@
 
 (in-package #:creds)
 
-;;; "creds" goes here. Hacks and glory await!
-
 (defparameter *creds* (make-hash-table :test #'equal))
 (defparameter *creds-file* "~/creds.yaml")
 
@@ -14,6 +12,11 @@ nil if the creds file does not exist."
   (if (probe-file *creds-file*)
       (setf *creds* (cl-yy::yaml-load-file "~/creds.yaml" :on-size-exceed :warn))
       nil))
+
+					; The following three
+					; functions were blatantly
+					; ripped off from the ironclad
+					; wiki page.
 
 (defun get-cipher (key)
   (ironclad:make-cipher :blowfish
@@ -55,7 +58,10 @@ provided."
   (write-yaml))
 
 (defun write-yaml (&optional (file-name *creds-file*))
-  "Write creds to a file."
+  "Write creds back to the file from whence they came. We don't use a
+library for this, we just write the file directly. This should work
+fine for storing creds, but if you try to get really fancy, it may
+fail."
   (with-open-file (yaml file-name :direction :output :if-exists :supersede)
     (format yaml "---~%")
     (mapcar (lambda (n) (format yaml "~A: ~A~%" n (gethash n *creds*))) (alexandria:hash-table-keys *creds*)))
