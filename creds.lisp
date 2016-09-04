@@ -67,7 +67,7 @@ library for this, we just write the file directly. This should work
 fine for storing creds, but if you try to get really fancy, it may
 fail."
   (if *creds-loaded*
-      (with-open-file (yaml file-name :direction :output :if-exists :supersede)
+      (with-open-file (yaml file-name :direction :output :if-does-not-exist :create :if-exists :supersede)
 	(format yaml "---~%")
 	(mapcar (lambda (n) (format yaml "~A: ~A~%" n (gethash n *creds*))) (alexandria:hash-table-keys *creds*)))
       t)
